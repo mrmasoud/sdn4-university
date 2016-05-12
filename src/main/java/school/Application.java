@@ -10,6 +10,10 @@
  */
 package school;
 
+import java.io.IOException;
+import java.util.Arrays;
+import javax.annotation.PostConstruct;
+
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.slf4j.Logger;
@@ -17,11 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
@@ -30,11 +30,6 @@ import org.springframework.data.neo4j.server.Neo4jServer;
 import org.springframework.data.neo4j.server.RemoteServer;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.annotation.PostConstruct;
 
 // todo: replace these three with @SpringBootApplication
 
@@ -66,6 +61,11 @@ public class Application extends Neo4jConfiguration{
         return super.getSession();
     }
 
+    @Override
+    public Neo4jServer neo4jServer() {
+        return new RemoteServer("https://localhost:7473", "neo4j", "password");
+    }
+
     /**
      * Initializes registrar.
      * <p/>
@@ -86,11 +86,6 @@ public class Application extends Neo4jConfiguration{
      */
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(Application.class);
-//        app.setShowBanner(false);
-//        SimpleCommandLinePropertySource source = new SimpleCommandLinePropertySource(args);
-//        // Check if the selected profile has been set as argument.
-//        // if not the development profile will be added
-//        addDefaultProfile(app, source);
         app.run(args);
     }
 
